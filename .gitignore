@@ -1,0 +1,5 @@
+*.o
+lbm
+*.raw
+*.gif
+display

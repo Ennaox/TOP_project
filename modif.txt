@@ -1,0 +1,13 @@
+- ajout extern dans les variable global dans lbm_phys.h
+
+- Corriger le segfault : lbm_struct.c ligne:19 ajout malloc
+
+- main.c deadlock ligne:206 ajout barrier pour enlever deadlock
+
+- supression argument inutile dans lbm_comm.c pour void lbm_comm_sync_ghosts_diagonal(Mesh *mesh_to_process, lbm_comm_type_t comm_type, int target_rank, int x ,int y) et void lbm_comm_sync_ghosts_vertical(Mesh *mesh_to_process, lbm_comm_type_t comm_type, int target_rank, int y ) (supression de lbm_comm_t * mesh)
+
+- Supression des barrière dans lbm_comm.c/lbm_comm_ghost_exchange et ajout paramètre tag dans lbm_comm_sync_ghosts_horizontal, lbm_comm_sync_ghosts_vertical, lbm_comm_sync_ghosts_diagonal pour éviter le mélange des comms
+
+- Passage des comms en non bloquante + ajout Wait_all PAS FAIT
+
+- Supression du sleep() ligne:319
