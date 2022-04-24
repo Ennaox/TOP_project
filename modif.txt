@@ -11,3 +11,21 @@
 - Passage des comms en non bloquante + ajout Wait_all PAS FAIT
 
 - Supression du sleep() ligne:319
+
+- supression communication en doublon: ligne 314 et 300
+
+- Piste modification : ligne 320/321 lbm_phys.c collision : inversion boucle j i en i j (row major) (gain 1 sec) a prouvé
+
+- Piste modification : ligne 338/340 lbm_phys.c propagation : inversion bouvle jik en ijk
+
+- Piste modification : ligne 28/30/59/61 lbm_struct.h : passage en unsigned
+	Modification lié: lbm_phys.c 313/334/335/64/349 ; lbm_comm.c 219/163; lbm_init.c 21/41/69/105; main.c 80;
+	349 supression comparaison =>0
+
+- main.c 167/180/186/193 supression barrier
+
+- passage de tout les k en unsigned lié a direction lbm_phys.c 46/64/87/150/176
+
+- main.c 174 : remplacement /n en /r gain de masse temps 
+
+- lbm_comm.c 81/82 inversion PGCD (gain de temps a confirmer)

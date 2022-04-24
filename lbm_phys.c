@@ -1,6 +1,7 @@
 /********************  HEADERS  *********************/
 #include <assert.h>
 #include <stdlib.h>
+#include <omp.h>
 #include "lbm_config.h"
 #include "lbm_struct.h"
 #include "lbm_phys.h"
@@ -43,7 +44,7 @@ const int opposite_of[DIRECTIONS] = { 0, 3, 4, 1, 2, 7, 8, 5, 6 };
 double get_vect_norme_2(const Vector vect1,const Vector vect2)
 {
 	//vars
-	int k;
+	unsigned k;
 	double res = 0.0;
 
 	//loop on dimensions
@@ -61,7 +62,7 @@ double get_vect_norme_2(const Vector vect1,const Vector vect2)
 double get_cell_density(const lbm_mesh_cell_t cell)
 {
 	//vars
-	int k;
+	unsigned k;
 	double res = 0.0;
 
 	//errors
@@ -84,7 +85,7 @@ double get_cell_density(const lbm_mesh_cell_t cell)
 void get_cell_velocity(Vector v,const lbm_mesh_cell_t cell,double cell_density)
 {
 	//vars
-	int k,d;
+	unsigned k,d;
 
 	//errors
 	assert(v != NULL);
@@ -147,7 +148,7 @@ double compute_equilibrium_profile(Vector velocity,double density,int direction)
 void compute_cell_collision(lbm_mesh_cell_t cell_out,const lbm_mesh_cell_t cell_in)
 {
 	//vars
-	int k;
+	unsigned k;
 	double density;
 	Vector v;
 	double feq;
@@ -173,7 +174,7 @@ void compute_cell_collision(lbm_mesh_cell_t cell_out,const lbm_mesh_cell_t cell_
 void compute_bounce_back(lbm_mesh_cell_t cell)
 {
 	//vars
-	int k;
+	unsigned k;
 	double tmp[DIRECTIONS];
 
 	//compute bounce back
@@ -277,7 +278,7 @@ void compute_outflow_zou_he_const_density(lbm_mesh_cell_t cell)
 void special_cells(Mesh * mesh, lbm_mesh_type_t * mesh_type, const lbm_comm_t * mesh_comm)
 {
 	//vars
-	int i,j;
+	unsigned i,j;
 
 	//loop on all inner cells
 	for( i = 1 ; i < mesh->width - 1 ; i++ )
@@ -310,15 +311,15 @@ void special_cells(Mesh * mesh, lbm_mesh_type_t * mesh_type, const lbm_comm_t * 
 void collision(Mesh * mesh_out,const Mesh * mesh_in)
 {
 	//vars
-	int i,j;
+	unsigned i,j;
 
 	//errors
 	assert(mesh_in->width == mesh_out->width);
 	assert(mesh_in->height == mesh_out->height);
 
 	//loop on all inner cells
-	for( j = 1 ; j < mesh_in->height - 1 ; j++)
-		for( i = 1 ; i < mesh_in->width - 1 ; i++ )
+	for( i = 1 ; i < mesh_in->width - 1 ; i++ )
+		for( j = 1 ; j < mesh_in->height - 1 ; j++)
 			compute_cell_collision(Mesh_get_cell(mesh_out, i, j),Mesh_get_cell(mesh_in, i, j));
 }
 
@@ -331,14 +332,15 @@ void collision(Mesh * mesh_out,const Mesh * mesh_in)
 void propagation(Mesh * mesh_out,const Mesh * mesh_in)
 {
 	//vars
-	int i,j,k;
-	int ii,jj;
+	unsigned i,j,k;
+	unsigned ii,jj;
 
 	//loop on all cells
-	for ( j = 0 ; j < mesh_out->height ; j++)
+	for ( i = 0 ; i < mesh_out->width; i++)
 	{
-		for ( i = 0 ; i < mesh_out->width; i++)
+		for ( j = 0 ; j < mesh_out->height ; j++)
 		{
+
 			//for all direction
 			for ( k  = 0 ; k < DIRECTIONS ; k++)
 			{
@@ -346,7 +348,7 @@ void propagation(Mesh * mesh_out,const Mesh * mesh_in)
 				ii = (i + direction_matrix[k][0]);
 				jj = (j + direction_matrix[k][1]);
 				//propagate to neighboor nodes
-				if ((ii >= 0 && ii < mesh_out->width) && (jj >= 0 && jj < mesh_out->height))
+				if ((ii < mesh_out->width) && (jj < mesh_out->height))
 					Mesh_get_cell(mesh_out, ii, jj)[k] = Mesh_get_cell(mesh_in, i, j)[k];
 			}
 		}

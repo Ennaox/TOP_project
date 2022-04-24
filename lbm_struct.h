@@ -25,9 +25,9 @@ typedef struct Mesh
 	/** Cellules du maillages (MESH_WIDTH * MESH_HEIGHT). **/
 	lbm_mesh_cell_t cells;
 	/** Largeur du maillage local (mailles fantome comprises). **/
-	int width;
+	unsigned width;
 	/** Largeur du maillage local (mailles fantome comprises). **/
-	int height;
+	unsigned height;
 } Mesh;
 
 /*********************  ENUM  ***********************/
@@ -56,9 +56,9 @@ typedef struct lbm_mesh_type_s
 	/** Type des cellules du maillages (MESH_WIDTH * MESH_HEIGHT). **/
 	lbm_cell_type_t * types;
 	/** Largeur du maillage local (mailles fantome comprises). **/
-	int width;
+	unsigned width;
 	/** Largeur du maillage local (mailles fantome comprises). **/
-	int height;
+	unsigned height;
 } lbm_mesh_type_t;
 
 /********************  STRUCT  **********************/

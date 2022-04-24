@@ -3,3 +3,8 @@ lbm
 *.raw
 *.gif
 display
+*.json
+GIF_TMP/*
+GIF_TMP
+*.out
+tmp.txt

@@ -18,7 +18,7 @@
 void init_cond_velocity_0_density_1(Mesh * mesh)
 {
 	//vars
-	int i,j,k;
+	unsigned i,j,k;
 
 	//errors
 	assert(mesh != NULL);
@@ -38,7 +38,7 @@ void init_cond_velocity_0_density_1(Mesh * mesh)
 void setup_init_state_circle_obstacle(Mesh * mesh, lbm_mesh_type_t * mesh_type, const lbm_comm_t * mesh_comm)
 {
 	//vars
-	int i,j;
+	unsigned i,j;
 
 	//loop on nodes
 	for ( i =  mesh_comm->x; i < mesh->width + mesh_comm->x ; i++)
@@ -66,7 +66,7 @@ void setup_init_state_circle_obstacle(Mesh * mesh, lbm_mesh_type_t * mesh_type, 
 void setup_init_state_global_poiseuille_profile(Mesh * mesh, lbm_mesh_type_t * mesh_type,const lbm_comm_t * mesh_comm)
 {
 	//vars
-	int i,j,k;
+	unsigned i,j,k;
 	Vector v = {0.0,0.0};
 	const double density = 1.0;
 
@@ -102,7 +102,7 @@ void setup_init_state_global_poiseuille_profile(Mesh * mesh, lbm_mesh_type_t * m
 void setup_init_state_border(Mesh * mesh, lbm_mesh_type_t * mesh_type, const lbm_comm_t * mesh_comm)
 {
 	//vars
-	int i,j,k;
+	unsigned i,j,k;
 	Vector v = {0.0,0.0};
 	const double density = 1.0;
 

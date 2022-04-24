@@ -77,7 +77,7 @@ void save_frame(FILE * fp,const Mesh * mesh)
 {
 	//write buffer to write float instead of double
 	lbm_file_entry_t buffer[WRITE_BUFFER_ENTRIES];
-	int i,j,cnt;
+	unsigned i,j,cnt;
 	double density;
 	Vector v;
 	double norm;
@@ -164,33 +164,33 @@ int main(int argc, char * argv[])
 		save_frame_all_domain(fp, &mesh, &temp_render );
 
 	//barrier to wait all before start
-	MPI_Barrier(MPI_COMM_WORLD);
+	//MPI_Barrier(MPI_COMM_WORLD);
 
 	//time steps
 	for ( i = 1 ; i <= ITERATIONS ; i++ )
 	{
 		//print progress
 		if( rank == RANK_MASTER )
-			printf("Progress [%5d / %5d]\n",i,ITERATIONS);
+			printf("Progress [%5d / %5d]\r",i,ITERATIONS);
 
 		//compute special actions (border, obstacle...)
 		special_cells( &mesh, &mesh_type, &mesh_comm);
 
 		//need to wait all before doing next step
-		MPI_Barrier(MPI_COMM_WORLD);
+		//MPI_Barrier(MPI_COMM_WORLD);
 
 		//compute collision term
 		collision( &temp, &mesh);
 
 		//need to wait all before doing next step
-		MPI_Barrier(MPI_COMM_WORLD);
+		//MPI_Barrier(MPI_COMM_WORLD);
 
 		//propagate values from node to neighboors
 		lbm_comm_ghost_exchange( &mesh_comm, &temp );
 		propagation( &mesh, &temp);
 
 		//need to wait all before doing next step
-		MPI_Barrier(MPI_COMM_WORLD);
+		//MPI_Barrier(MPI_COMM_WORLD);
 
 		//save step
 		if ( i % WRITE_STEP_INTERVAL == 0 && lbm_gbl_config.output_filename != NULL )

@@ -37,11 +37,11 @@ typedef enum lbm_comm_type_e
 typedef struct lbm_comm_t_s
 {
 	/** Position de la maille locale dans le maillage global (origine). **/
-	int x;
-	int y;
+	unsigned x;
+	unsigned y;
 	/** Taille de la maille locale. **/
-	int width;
-	int height;
+	unsigned width;
+	unsigned height;
 	int nb_x;
 	int nb_y;
 	/** Id du voisin de droite, -1 si aucun. **/

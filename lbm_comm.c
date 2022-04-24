@@ -160,7 +160,7 @@ void lbm_comm_sync_ghosts_horizontal( lbm_comm_t * mesh, Mesh *mesh_to_process, 
 	if (target_rank == -1)
 		return;
 
-	int y;
+	unsigned y;
 
 	switch (comm_type)
 	{
@@ -216,7 +216,7 @@ void lbm_comm_sync_ghosts_vertical(Mesh *mesh_to_process, lbm_comm_type_t comm_t
 {
 	//vars
 	MPI_Status status;
-	int x, k;
+	unsigned x, k;
 
 	//if target is -1, no comm
 	if (target_rank == -1)
@@ -298,8 +298,8 @@ void lbm_comm_ghost_exchange(lbm_comm_t * mesh, Mesh *mesh_to_process )
 	//MPI_Barrier(MPI_COMM_WORLD);
 
 	//bottom left
-	lbm_comm_sync_ghosts_diagonal(mesh_to_process,COMM_SEND,mesh->corner_id[CORNER_BOTTOM_LEFT],1,mesh->height - 2,7);
-	lbm_comm_sync_ghosts_diagonal(mesh_to_process,COMM_RECV,mesh->corner_id[CORNER_TOP_RIGHT],mesh->width - 1,0,7);
+	//lbm_comm_sync_ghosts_diagonal(mesh_to_process,COMM_SEND,mesh->corner_id[CORNER_BOTTOM_LEFT],1,mesh->height - 2,7);
+	//lbm_comm_sync_ghosts_diagonal(mesh_to_process,COMM_RECV,mesh->corner_id[CORNER_TOP_RIGHT],mesh->width - 1,0,7);
 
 	//prevend comm mixing to avoid bugs
 	//MPI_Barrier(MPI_COMM_WORLD);
@@ -312,8 +312,8 @@ void lbm_comm_ghost_exchange(lbm_comm_t * mesh, Mesh *mesh_to_process )
 	//MPI_Barrier(MPI_COMM_WORLD);
 
 	// Right to left phase : on reçoit à gauche et on envoie depuis la droite
-	lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_SEND,mesh->left_id,1,8);
-	lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_RECV,mesh->right_id,mesh->width - 1,8);
+	//lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_SEND,mesh->left_id,1,8);
+	//lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_RECV,mesh->right_id,mesh->width - 1,8);
 	
 	//wait for IO to finish, VERY important, do not remove.
 	//FLUSH_INOUT();
