@@ -28,4 +28,8 @@
 
 - main.c 174 : remplacement /n en /r gain de masse temps 
 
-- lbm_comm.c 81/82 inversion PGCD (gain de temps a confirmer)
+- lbm_comm.c : supression de la plupart des envoies/receptions
+
+- lbm_config.c : ajout fclose() pour éviter les mémory leak
+
+- lbm_phys.c 321/340 + main.c ajout MPI_init_thread : AJOUT THREAD

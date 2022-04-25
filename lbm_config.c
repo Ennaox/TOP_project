@@ -116,7 +116,7 @@ void load_config(const char * filename)
 		perror(filename);
 		abort();
 	}
-
+	fclose(fp);
 	update_derived_parameter();
 }
 

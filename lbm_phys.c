@@ -318,6 +318,7 @@ void collision(Mesh * mesh_out,const Mesh * mesh_in)
 	assert(mesh_in->height == mesh_out->height);
 
 	//loop on all inner cells
+	#pragma omp for
 	for( i = 1 ; i < mesh_in->width - 1 ; i++ )
 		for( j = 1 ; j < mesh_in->height - 1 ; j++)
 			compute_cell_collision(Mesh_get_cell(mesh_out, i, j),Mesh_get_cell(mesh_in, i, j));
@@ -336,6 +337,7 @@ void propagation(Mesh * mesh_out,const Mesh * mesh_in)
 	unsigned ii,jj;
 
 	//loop on all cells
+	#pragma omp for
 	for ( i = 0 ; i < mesh_out->width; i++)
 	{
 		for ( j = 0 ; j < mesh_out->height ; j++)

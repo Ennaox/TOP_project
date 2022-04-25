@@ -124,12 +124,12 @@ int main(int argc, char * argv[])
 	Mesh temp_render;
 	lbm_mesh_type_t mesh_type;
 	lbm_comm_t mesh_comm;
-	int i, rank, comm_size;
+	int i, rank, comm_size,thread_support;
 	FILE * fp = NULL;
 	const char * config_filename = NULL;
 
 	//init MPI and get current rank and commuincator size.
-	MPI_Init( &argc, &argv );
+	MPI_Init_thread( &argc, &argv, MPI_THREAD_FUNNELED, &thread_support );
 	MPI_Comm_rank( MPI_COMM_WORLD, &rank );
 	MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
 
