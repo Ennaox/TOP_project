@@ -58,8 +58,6 @@ FILE * open_output_file(lbm_comm_t * mesh_comm)
 }
 
 void close_file(FILE* fp){
-	//wait all before closing
-	MPI_Barrier(MPI_COMM_WORLD);
 	//close file
 	fclose(fp);
 }
@@ -116,7 +114,7 @@ void save_frame(FILE * fp,const Mesh * mesh)
 }
 
 /*******************  FUNCTION  *********************/
-int main(int argc, char * argv[])
+int main(int argc, char ** argv)
 {
 	//vars
 	Mesh mesh;
@@ -200,10 +198,6 @@ int main(int argc, char * argv[])
 	if( rank == RANK_MASTER && fp != NULL)
 	{
 		close_file(fp);
-	}
-	else
-	{
-		MPI_Barrier(MPI_COMM_WORLD);
 	}
 
 	//free memory
