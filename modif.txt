@@ -28,10 +28,12 @@
 
 - main.c 174 : remplacement /n en /r gain de masse temps 
 
-- lbm_comm.c : supression de la plupart des envoies/receptions
+- lbm_comm.c : supression de la plupart des envoies/receptions (toute sauf vertical)
 
 - lbm_config.c : ajout fclose() pour éviter les mémory leak
 
 - lbm_phys.c 321/340 + main.c ajout MPI_init_thread : AJOUT THREAD
 
 - lbm_comm.c 166/169/225/229 supression de la boucle/envoie d'un tableau au lieux d'envoyer les cases une a une
+
+- supression usleep.c

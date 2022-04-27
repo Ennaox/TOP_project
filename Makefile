@@ -24,6 +24,11 @@ run: lbm
 debug: lbm
 	mpirun -np 2 $(TERM) -e gdb ./lbm
 
+trace: lbm
+	LD_PRELOAD=libinterpol.so mpirun -n 2 ./lbm
+	mv /tmp/*.json .
+	./concatenation.sh
+
 %.o: %.c
 	$(MPICC) $(CFLAGS) -c -o $@ $<
 

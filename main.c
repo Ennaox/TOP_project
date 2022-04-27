@@ -127,7 +127,8 @@ int main(int argc, char ** argv)
 	const char * config_filename = NULL;
 
 	//init MPI and get current rank and commuincator size.
-	MPI_Init_thread( &argc, &argv, MPI_THREAD_FUNNELED, &thread_support );
+	//MPI_Init_thread( &argc, &argv, MPI_THREAD_FUNNELED, &thread_support );
+	MPI_Init(&argc,&argv);
 	MPI_Comm_rank( MPI_COMM_WORLD, &rank );
 	MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
 
