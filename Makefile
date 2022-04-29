@@ -19,7 +19,7 @@ TARGET=lbm display
 all: $(TARGET)
 
 run: lbm
-	mpirun --use-hwthread-cpus -np 2 ./lbm
+	mpirun --use-hwthread-cpus -np 4 ./lbm
 
 debug: lbm
 	mpirun -np 2 $(TERM) -e gdb ./lbm
