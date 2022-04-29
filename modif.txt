@@ -30,10 +30,14 @@
 
 - lbm_comm.c : supression de la plupart des envoies/receptions (toute sauf vertical)
 
-- lbm_config.c : ajout fclose() pour éviter les mémory leak
+- lbm_config.c : ajout fclose() pour éviter les mémory leakw
 
 - lbm_phys.c 321/340 + main.c ajout MPI_init_thread : AJOUT THREAD
 
 - lbm_comm.c 166/169/225/229 supression de la boucle/envoie d'un tableau au lieux d'envoyer les cases une a une
 
 - supression usleep.c
+
+- Passage de la simulation en vertical: lbm_comm.c: 260/261/267/268 mise en commentaire supression commentaire 246/247/253/254 
+
+- Tentative de MPI IO non fructueuse : dépend trop de la configuration (ssd ou non) ralentit le programme, better gather a la place

@@ -76,10 +76,10 @@ void lbm_comm_init( lbm_comm_t * mesh_comm, int rank, int comm_size, int width, 
 	int rank_y;
 
 	//compute splitting
-	nb_y = lbm_helper_pgcd(comm_size,width);
-	nb_x = comm_size / nb_y;
-	//nb_x = lbm_helper_pgcd(comm_size,width);
-	//nb_y = comm_size / nb_x;
+	//nb_y = lbm_helper_pgcd(comm_size,width);
+	//nb_x = comm_size / nb_y;
+	nb_x = lbm_helper_pgcd(comm_size,height);
+	nb_y = comm_size / nb_x;
 
 	//check
 	assert(nb_x * nb_y == comm_size);
@@ -243,29 +243,29 @@ void lbm_comm_ghost_exchange(lbm_comm_t * mesh, Mesh *mesh_to_process )
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 
 	//Left to right phase : on reçoit à droite et on envoie depuis la gauche
-	//lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_SEND,mesh->right_id,mesh->width - 2, 0);
-	//lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_RECV,mesh->left_id,0,0);
+	lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_SEND,mesh->right_id,mesh->width - 2, 0);
+	lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_RECV,mesh->left_id,0,0);
 
 	//prevend comm mixing to avoid bugs
 	//MPI_Barrier(MPI_COMM_WORLD);
 
 	// Right to left phase : on reçoit à gauche et on envoie depuis la droite
-	//lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_SEND,mesh->left_id,1,1);
-	//lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_RECV,mesh->right_id,mesh->width - 1,1);
+	lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_SEND,mesh->left_id,1,1);
+	lbm_comm_sync_ghosts_horizontal(mesh,mesh_to_process,COMM_RECV,mesh->right_id,mesh->width - 1,1);
 
 	//prevend comm mixing to avoid bugs
 	//MPI_Barrier(MPI_COMM_WORLD);
 
 	//top to bottom : on reçoit en bas et on envoie depuis le hauteur
-	lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_SEND,mesh->bottom_id,mesh->height - 2,2);
-	lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_RECV,mesh->top_id,0,2);
+	//lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_SEND,mesh->bottom_id,mesh->height - 2,2);
+	//lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_RECV,mesh->top_id,0,2);
 
 	//prevend comm mixing to avoid bugs
 	//MPI_Barrier(MPI_COMM_WORLD);
 
 	// Bot to top phase : on reçoit en haut et on envoie depuis le bas
-	lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_SEND,mesh->top_id,1,3);
-	lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_RECV,mesh->bottom_id,mesh->height - 1,3);
+	//lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_SEND,mesh->top_id,1,3);
+	//lbm_comm_sync_ghosts_vertical(mesh_to_process,COMM_RECV,mesh->bottom_id,mesh->height - 1,3);
 
 	//prevend comm mixing to avoid bugs
 	//MPI_Barrier(MPI_COMM_WORLD);
@@ -319,38 +319,38 @@ void lbm_comm_ghost_exchange(lbm_comm_t * mesh, Mesh *mesh_to_process )
  * @param mesh_comm MeshComm à utiliser
  * @param temp Mesh a utiliser pour stocker les segments
 **/
-void save_frame_all_domain( FILE * fp, Mesh *source_mesh, Mesh *temp )
+void save_frame_all_domain( MPI_File fp, Mesh *source_mesh)
 {
 	//vars
-	int i = 0;
+	//int i = 0;
 	int comm_size, rank ;
-	MPI_Status status;
+	//MPI_Status status;
 
 	//get rank and comm size
 	MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
 	MPI_Comm_rank( MPI_COMM_WORLD, &rank );
 
 	/* If whe have more than one process */
-	if( 1 < comm_size )
-	{
-		if( rank == 0 )
-		{
-			/* Rank 0 renders its local Mesh */
-			save_frame(fp,source_mesh);
-			/* Rank 0 receives & render other processes meshes */
-			for( i = 1 ; i < comm_size ; i++ )
-			{
-				MPI_Recv( temp->cells, source_mesh->width  * source_mesh->height * DIRECTIONS, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status );
-				save_frame(fp,temp);
-			}
-		} else {
-			/* All other ranks send their local mesh */
-			MPI_Send( source_mesh->cells, source_mesh->width * source_mesh->height * DIRECTIONS, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD );
-		}
-	} else {
-		/* Only 0 renders its local mesh */
-		save_frame(fp,source_mesh);
-	}
-
+	// if( 1 < comm_size )
+	// {
+	// 	if( rank == 0 )
+	// 	{
+	// 		/* Rank 0 renders its local Mesh */
+	// 		save_frame(fp,source_mesh);
+	// 		/* Rank 0 receives & render other processes meshes */
+	// 		for( i = 1 ; i < comm_size ; i++ )
+	// 		{
+	// 			MPI_Recv( temp->cells, source_mesh->width  * source_mesh->height * DIRECTIONS, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status );
+	// 			save_frame(fp,temp);
+	// 		}
+	// 	} else {
+	// 		/* All other ranks send their local mesh */
+	// 		MPI_Send( source_mesh->cells, source_mesh->width * source_mesh->height * DIRECTIONS, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD );
+	// 	}
+	// } else {
+	// 	/* Only 0 renders its local mesh */
+	// 	save_frame(fp,source_mesh);
+	// }
+	save_frame(fp,source_mesh);
 }
 

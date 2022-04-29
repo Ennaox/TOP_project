@@ -281,23 +281,27 @@ void special_cells(Mesh * mesh, lbm_mesh_type_t * mesh_type, const lbm_comm_t * 
 	unsigned i,j;
 
 	//loop on all inner cells
-	for( i = 1 ; i < mesh->width - 1 ; i++ )
+	#pragma omp parallel
 	{
-		for( j = 1 ; j < mesh->height - 1 ; j++)
+		#pragma omp for schedule(static) private(i,j)
+		for( i = 1 ; i < mesh->width - 1 ; i++ )
 		{
-			switch (*( lbm_cell_type_t_get_cell( mesh_type , i, j) ))
+			for( j = 1 ; j < mesh->height - 1 ; j++)
 			{
-				case CELL_FUILD:
-					break;
-				case CELL_BOUNCE_BACK:
-					compute_bounce_back(Mesh_get_cell(mesh, i, j));
-					break;
-				case CELL_LEFT_IN:
-					compute_inflow_zou_he_poiseuille_distr(mesh, Mesh_get_cell(mesh, i, j) ,j + mesh_comm->y);
-					break;
-				case CELL_RIGHT_OUT:
-					compute_outflow_zou_he_const_density(Mesh_get_cell(mesh, i, j));
-					break;
+				switch (*( lbm_cell_type_t_get_cell( mesh_type , i, j) ))
+				{
+					case CELL_FUILD:
+						break;
+					case CELL_BOUNCE_BACK:
+						compute_bounce_back(Mesh_get_cell(mesh, i, j));
+						break;
+					case CELL_LEFT_IN:
+						compute_inflow_zou_he_poiseuille_distr(mesh, Mesh_get_cell(mesh, i, j) ,j + mesh_comm->y);
+						break;
+					case CELL_RIGHT_OUT:
+						compute_outflow_zou_he_const_density(Mesh_get_cell(mesh, i, j));
+						break;
+				}
 			}
 		}
 	}
@@ -318,10 +322,13 @@ void collision(Mesh * mesh_out,const Mesh * mesh_in)
 	assert(mesh_in->height == mesh_out->height);
 
 	//loop on all inner cells
-	#pragma omp for
-	for( i = 1 ; i < mesh_in->width - 1 ; i++ )
-		for( j = 1 ; j < mesh_in->height - 1 ; j++)
-			compute_cell_collision(Mesh_get_cell(mesh_out, i, j),Mesh_get_cell(mesh_in, i, j));
+	#pragma omp parallel
+	{
+		#pragma omp for schedule(static) private(i,j)
+		for( i = 1 ; i < mesh_in->width - 1 ; i++ )
+			for( j = 1 ; j < mesh_in->height - 1 ; j++)
+				compute_cell_collision(Mesh_get_cell(mesh_out, i, j),Mesh_get_cell(mesh_in, i, j));
+	}
 }
 
 /*******************  FUNCTION  *********************/
@@ -337,21 +344,24 @@ void propagation(Mesh * mesh_out,const Mesh * mesh_in)
 	unsigned ii,jj;
 
 	//loop on all cells
-	#pragma omp for
-	for ( i = 0 ; i < mesh_out->width; i++)
+	#pragma omp parallel
 	{
-		for ( j = 0 ; j < mesh_out->height ; j++)
+		#pragma omp for schedule(static) private(i,j,k,ii,jj)
+		for ( i = 0 ; i < mesh_out->width; i++)
 		{
-
-			//for all direction
-			for ( k  = 0 ; k < DIRECTIONS ; k++)
+			for ( j = 0 ; j < mesh_out->height ; j++)
 			{
-				//compute destination point
-				ii = (i + direction_matrix[k][0]);
-				jj = (j + direction_matrix[k][1]);
-				//propagate to neighboor nodes
-				if ((ii < mesh_out->width) && (jj < mesh_out->height))
-					Mesh_get_cell(mesh_out, ii, jj)[k] = Mesh_get_cell(mesh_in, i, j)[k];
+
+				//for all direction
+				for ( k  = 0 ; k < DIRECTIONS ; k++)
+				{
+					//compute destination point
+					ii = (i + direction_matrix[k][0]);
+					jj = (j + direction_matrix[k][1]);
+					//propagate to neighboor nodes
+					if ((ii < mesh_out->width) && (jj < mesh_out->height))
+						Mesh_get_cell(mesh_out, ii, jj)[k] = Mesh_get_cell(mesh_in, i, j)[k];
+				}
 			}
 		}
 	}

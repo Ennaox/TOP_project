@@ -4,6 +4,7 @@
 /********************  HEADERS  *********************/
 #include <stdint.h>
 #include <stdio.h>
+#include <mpi.h>
 #include "lbm_config.h"
 
 /********************** TYPEDEF *********************/
@@ -102,7 +103,7 @@ void lbm_mesh_type_t_init( lbm_mesh_type_t * mesh, int width,  int height );
 void lbm_mesh_type_t_release( lbm_mesh_type_t * mesh );
 
 /*******************  FUNCTION  *********************/
-void save_frame(FILE * fp,const Mesh * mesh);
+void save_frame(MPI_File fp,const Mesh * mesh);
 
 /*******************  FUNCTION  *********************/
 void fatal(const char * message);
