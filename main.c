@@ -35,7 +35,6 @@ void write_file_header(MPI_File fp,lbm_comm_t * mesh_comm)
 	// fwrite(&header,sizeof(header),1,fp);
 	if(rank == RANK_MASTER)
 		MPI_File_write(fp,&header,4,MPI_UINT32_T,MPI_STATUS_IGNORE);
-	MPI_File_seek(fp, sizeof(lbm_file_header_t), MPI_SEEK_SET);
 }
 
 /*******************  FUNCTION  *********************/
@@ -49,6 +48,8 @@ MPI_File open_output_file(lbm_comm_t * mesh_comm)
 		return NULL;
 
 	//open result file
+	MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_File_open(MPI_COMM_WORLD,RESULT_FILENAME,MPI_MODE_CREATE|MPI_MODE_WRONLY,MPI_INFO_NULL,&fp);
 	//errors
 	if (fp == NULL)
@@ -118,9 +119,9 @@ MPI_Request save_frame(MPI_File fp,const Mesh * mesh,unsigned write_cnt)
 		}
 	}
 	MPI_Request req;
+	MPI_File_seek(fp, sizeof(lbm_file_header_t) + (rank+write_cnt)*(size*cnt*sizeof(double)), MPI_SEEK_SET);
 	MPI_File_iwrite(fp,buffer,2*cnt,MPI_FLOAT,&req);
-	for(int i = 0; i<size-1;i++)
-		MPI_File_seek(fp, sizeof(buffer), MPI_SEEK_CUR);
+	
 
 	return req;
 	//fwrite(buffer,sizeof(lbm_file_entry_t),cnt,fp);
@@ -179,7 +180,6 @@ int main(int argc, char ** argv)
 	//write initial condition in output file
 	if (lbm_gbl_config.output_filename != NULL)
 		save_frame_all_domain(fp, &mesh);
-	printf("ici\n");
 	//barrier to wait all before start
 	//MPI_Barrier(MPI_COMM_WORLD);
 
@@ -215,7 +215,7 @@ int main(int argc, char ** argv)
 			MPI_Wait(&req,MPI_STATUS_IGNORE);
 			req = MPI_REQUEST_NULL;
 
-			for(int i=0; i<DIRECTIONS*MESH_WIDTH*MESH_HEIGHT;i++)
+			for(int i=0; i<DIRECTIONS*mesh.width*mesh.height;i++)
 			{
 				temp_render.cells[i] = mesh.cells[i];
 			}
