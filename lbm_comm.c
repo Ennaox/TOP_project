@@ -319,6 +319,19 @@ void lbm_comm_ghost_exchange(lbm_comm_t * mesh, Mesh *mesh_to_process )
  * @param mesh_comm MeshComm à utiliser
  * @param temp Mesh a utiliser pour stocker les segments
 **/
+#if defined(ASYNC_IO)
+void save_frame_all_domain( MPI_File fp, Mesh *source_mesh)
+{
+	MPI_Request req = save_frame(fp,source_mesh);
+	MPI_Wait(&req,MPI_STATUS_IGNORE);
+}
+
+#elif defined(ORDERED_IO)
+void save_frame_all_domain( MPI_File fp, Mesh *source_mesh)
+{
+	save_frame(fp,source_mesh);
+}
+#else
 void save_frame_all_domain( FILE * fp, Mesh *source_mesh, Mesh *temp )
 {
 	//vars
@@ -353,4 +366,4 @@ void save_frame_all_domain( FILE * fp, Mesh *source_mesh, Mesh *temp )
 	}
 
 }
-
+#endif

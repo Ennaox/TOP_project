@@ -8,6 +8,7 @@ TERM = kitty
 #flags
 CFLAGS=-Wall -Wextra -g -Ofast -mavx2 -pg -fopenmp
 LDFLAGS=-lm
+DFLAGS=
 
 #Files
 LBM_SOURCES=main.c lbm_phys.c lbm_init.c lbm_struct.c lbm_comm.c lbm_config.c
@@ -17,6 +18,15 @@ LBM_OBJECTS=$(LBM_SOURCES:.c=.o)
 TARGET=lbm display
 
 all: $(TARGET)
+
+classic: clean
+	$(MAKE)
+
+ordered: clean
+	$(MAKE) DFLAGS="-D ORDERED_IO"
+
+async: clean
+	$(MAKE) DFLAGS="-D ASYNC_IO"
 
 run: lbm
 	mpirun --use-hwthread-cpus -np 2 ./lbm
@@ -30,10 +40,10 @@ trace: lbm
 	./concatenation.sh
 
 %.o: %.c
-	$(MPICC) $(CFLAGS) -c -o $@ $<
+	$(MPICC) $(CFLAGS) -c -o $@ $< $(DFLAGS)
 
 lbm: $(LBM_OBJECTS)
-	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(DFLAGS)
 
 display: display.c
 	$(CC) $(CFLAGS) -o $@ display.c

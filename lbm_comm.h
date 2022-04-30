@@ -78,6 +78,9 @@ void lbm_comm_sync_ghosts_wait( lbm_comm_t * mesh );
 void lbm_comm_ghost_exchange(lbm_comm_t * mesh, Mesh *mesh_to_process );
 
 /*******************  FUNCTION  *********************/
+#if defined(ASYNC_IO) || defined(ORDERED_IO)
+void save_frame_all_domain( MPI_File fp, Mesh *source_mesh);
+#else 
 void save_frame_all_domain( FILE * fp, Mesh *source_mesh, Mesh *temp );
-
+#endif
 #endif
