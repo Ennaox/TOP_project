@@ -6,9 +6,8 @@ MAKEDEPEND=makedepend
 TERM = kitty
 
 #flags
-CFLAGS=-Wall -Wextra -g -Ofast -mavx2 -pg -fopenmp
+CFLAGS=-Wall -Wextra -g -Ofast -mavx2 -march=native -pg -fopenmp
 LDFLAGS=-lm
-DFLAGS=
 
 #Files
 LBM_SOURCES=main.c lbm_phys.c lbm_init.c lbm_struct.c lbm_comm.c lbm_config.c
@@ -29,7 +28,7 @@ async: clean
 	$(MAKE) DFLAGS="-D ASYNC_IO"
 
 run: lbm
-	mpirun --use-hwthread-cpus -np 2 ./lbm
+	mpirun -np 2 ./lbm
 
 debug: lbm
 	mpirun -np 2 $(TERM) -e gdb ./lbm

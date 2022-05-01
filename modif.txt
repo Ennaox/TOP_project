@@ -1,43 +1,54 @@
+- supression usleep.c
+
+------------ Debug -------------------
 - ajout extern dans les variable global dans lbm_phys.h
 
 - Corriger le segfault : lbm_struct.c ligne:19 ajout malloc
 
 - main.c deadlock ligne:206 ajout barrier pour enlever deadlock
 
+- lbm_config.c : ajout fclose() pour éviter les mémory leak
+
+------------ Optimisation simple -------------------
+
 - supression argument inutile dans lbm_comm.c pour void lbm_comm_sync_ghosts_diagonal(Mesh *mesh_to_process, lbm_comm_type_t comm_type, int target_rank, int x ,int y) et void lbm_comm_sync_ghosts_vertical(Mesh *mesh_to_process, lbm_comm_type_t comm_type, int target_rank, int y ) (supression de lbm_comm_t * mesh)
-
-- Supression des barrière dans lbm_comm.c/lbm_comm_ghost_exchange et ajout paramètre tag dans lbm_comm_sync_ghosts_horizontal, lbm_comm_sync_ghosts_vertical, lbm_comm_sync_ghosts_diagonal pour éviter le mélange des comms
-
-- Passage des comms en non bloquante + ajout Wait_all PAS FAIT
 
 - Supression du sleep() ligne:319
 
-- supression communication en doublon: ligne 314 et 300
+- Ajout de flag d'optimisation
 
-- Piste modification : ligne 320/321 lbm_phys.c collision : inversion boucle j i en i j (row major) (gain 1 sec) a prouvé
+- main.c 174 : remplacement /n en /r gain de masse temps
 
-- Piste modification : ligne 338/340 lbm_phys.c propagation : inversion bouvle jik en ijk
+- ligne 320/321 lbm_phys.c collision : inversion boucle j i en i j (row major) (gain 1 sec) a prouvé
+
+- ligne 338/340 lbm_phys.c propagation : inversion bouvle jik en ijk
 
 - Piste modification : ligne 28/30/59/61 lbm_struct.h : passage en unsigned
 	Modification lié: lbm_phys.c 313/334/335/64/349 ; lbm_comm.c 219/163; lbm_init.c 21/41/69/105; main.c 80;
 	349 supression comparaison =>0
 
+- passage de tout les k en unsigned lié a direction lbm_phys.c 46/64/87/150/176 
+
+---------- Optimisation des communications --------
+
+- Supression des barrière dans lbm_comm.c/lbm_comm_ghost_exchange et ajout paramètre tag dans lbm_comm_sync_ghosts_horizontal, lbm_comm_sync_ghosts_vertical, lbm_comm_sync_ghosts_diagonal pour éviter le mélange des comms
+
 - main.c 167/180/186/193 supression barrier
 
-- passage de tout les k en unsigned lié a direction lbm_phys.c 46/64/87/150/176
+- Passage des comms en non bloquante + ajout Wait_all PAS FAIT
 
-- main.c 174 : remplacement /n en /r gain de masse temps 
-
-- lbm_comm.c : supression de la plupart des envoies/receptions (toute sauf vertical)
-
-- lbm_config.c : ajout fclose() pour éviter les mémory leakw
-
-- lbm_phys.c 321/340 + main.c ajout MPI_init_thread : AJOUT THREAD
+- supression communication en doublon: ligne 314 et 300
 
 - lbm_comm.c 166/169/225/229 supression de la boucle/envoie d'un tableau au lieux d'envoyer les cases une a une
 
-- supression usleep.c
+- lbm_comm.c : supression de la plupart des envoies/receptions (toute sauf vertical)
 
 - Passage de la simulation en vertical: lbm_comm.c: 260/261/267/268 mise en commentaire supression commentaire 246/247/253/254 
 
-- Tentative de MPI IO non fructueuse : dépend trop de la configuration (ssd ou non) ralentit le programme, better gather a la place
+--------- Thread --------------
+
+- lbm_phys.c 321/340 AJOUT THREAD
+
+--------- Sortie --------------
+
+- Tentative de MPI IO: dépend trop de la configuration (ssd ou non) ralentit le programme, better gather a la place
